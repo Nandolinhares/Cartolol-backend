@@ -36,9 +36,6 @@ exports.signup = (req, res) => {
             return firebase.auth().createUserWithEmailAndPassword(newUser.email, newUser.password);
         }
     })
-    .catch(err => {
-        console.error(err);
-    })
     .then(data => {
         userId = data.user.uid;
         return data.user.getIdToken();
