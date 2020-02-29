@@ -8,9 +8,10 @@ const app = express();
 const { admin, db } = require('./util/admin');
 
 //User stuff
-const { signup } = require('./handlers/users');
+const { signup, login } = require('./handlers/users');
 
 app.post('/signup', signup);
+app.post('/login', login);
 
 
 app.get('/posts', (req, res) => {

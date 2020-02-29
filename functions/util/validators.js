@@ -40,3 +40,22 @@ exports.validateSignUp = (newUser) => {
         valid: Object.keys(errors).length === 0 ? true : false
     }
 }
+
+exports.validateLogin = (userData) => {
+    let errors = {};
+
+    if(isEmpty(userData.email)) {
+        errors.email = 'O campo de email não pode estar vazio';
+    } else if(!isEmail(userData.email)){
+        errors.email = 'O email não é válido';
+    }
+
+    if(isEmpty(userData.password)){
+        errors.password = 'O campo de senha não pode estar vazio';
+    }
+
+    return {
+        errors,
+        valid: Object.keys(errors).length === 0 ? true : false
+    }
+}

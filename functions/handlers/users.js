@@ -8,7 +8,7 @@ firebase.initializeApp(config);
 //firebase.analytics();
 
 //Validators
-const { validateSignUp } = require('../util/validators');
+const { validateSignUp, validateLogin } = require('../util/validators');
 
 exports.signup = (req, res) => {
     //Informações do usuário a ser cadastrado
@@ -65,5 +65,35 @@ exports.signup = (req, res) => {
             return res.status(500).json({ general: 'Alguma coisa deu errado' });
         }
     })
-    
+}
+
+exports.login = (req, res) => {
+    const userData = {
+        email: req.body.email,
+        password: req.body.password
+    }
+
+    const { valid, errors } = validateLogin(userData);
+
+    if(!valid) {
+        return res.status(400).json(errors);
+    }
+
+    firebase.auth().signInWithEmailAndPassword(userData.email, userData.password)
+        .then(data => {
+            return data.user.getIdToken();
+        })
+        .then(token => {
+            return res.status(200).json({ 
+                status: 'Logado com sucesso',
+                token
+             })
+        })
+        .catch(err => {
+            if(err.code == 'auth/user-not-found'){
+                res.status(404).json({ message: 'O usuário não existe' });
+            } else {
+                return res.status(500).json({ error: err.code });
+            }
+        })
 }
