@@ -9,7 +9,7 @@ firebase.initializeApp(config);
 
 
 //Validators
-const { validateSignUp, validateLogin } = require('../util/validators');
+const { validateSignUp, validateLogin, reduceUserDetails } = require('../util/validators');
 
 exports.signup = (req, res) => {
     //Informações do usuário a ser cadastrado
@@ -99,6 +99,24 @@ exports.login = (req, res) => {
         })
 }
 
+exports.updateUserDetails = (req, res) => {
+    const { userDetails, errors, valid } = reduceUserDetails(req.body);
+
+    if(!valid) {
+        return res.json(errors);
+    }
+
+    db.doc(`/users/${req.user.handle}`).update(userDetails)
+        .then(() => {
+            return res.json({ message: 'As informações foram modificadas' });
+        })
+        .catch(err => {
+            console.error(err);
+            return res.status(500).json({ error: err.code });
+        })
+}
+
+//Upload image
 exports.uploadImage = (req, res) => {
     const BusBoy = require('busboy');
     const path = require('path'); //default package installed in every node

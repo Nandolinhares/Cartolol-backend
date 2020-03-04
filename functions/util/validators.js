@@ -1,3 +1,5 @@
+const { db } = require('./admin');
+
 //Helper Functions
 const isEmpty = (field) => {
     if(field.trim() === '') return true;
@@ -55,6 +57,24 @@ exports.validateLogin = (userData) => {
     }
 
     return {
+        errors,
+        valid: Object.keys(errors).length === 0 ? true : false
+    }
+}
+
+exports.reduceUserDetails = (userReq) => {
+    //Verificar as informações
+    const userDetails = {};
+    let errors = {};
+
+    if(!isEmpty(userReq.name)) {
+        userDetails.name = userReq.name
+    } else {
+        errors.name = 'O campo nome não pode estar vazio';
+    };
+
+    return {
+        userDetails,
         errors,
         valid: Object.keys(errors).length === 0 ? true : false
     }
