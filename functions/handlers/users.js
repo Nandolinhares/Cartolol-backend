@@ -116,6 +116,21 @@ exports.updateUserDetails = (req, res) => {
         })
 }
 
+//Get authenticated user data
+exports.getAuthenticatedUser = (req, res) => {
+    let userData = {};
+
+    db.doc(`/users/${req.user.handle}`).get()
+        .then(doc => {
+            userData.credentials = doc.data();
+            return res.json(userData);
+        })
+        .catch(err => {
+            console.error(err);
+            return res.status(500).json({ error: err.code });
+        })
+}
+
 //Upload image
 exports.uploadImage = (req, res) => {
     const BusBoy = require('busboy');

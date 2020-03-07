@@ -11,7 +11,7 @@ app.use(cors());
 const FBAuth = require('./util/fbAuth');
 
 //User stuff
-const { signup, login, uploadImage, updateUserDetails } = require('./handlers/users');
+const { signup, login, uploadImage, updateUserDetails, getAuthenticatedUser } = require('./handlers/users');
 
 //Post stuff
 const { getAllPosts } = require('./handlers/posts');
@@ -21,6 +21,7 @@ app.post('/signup', signup);
 app.post('/login', login);
 app.post('/user/image', FBAuth, uploadImage);
 app.post('/user', FBAuth, updateUserDetails);
+app.get('/user', FBAuth, getAuthenticatedUser);
 
 //Post stuff
 app.get('/posts', FBAuth, getAllPosts);
