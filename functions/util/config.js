@@ -1,10 +1,10 @@
 module.exports = {
-    apiKey: "AIzaSyAtmK5SrQWE-F9hbigW12pxz-OVOp420to",
-    authDomain: "cartolalol.firebaseapp.com",
-    databaseURL: "https://cartolalol.firebaseio.com",
-    projectId: "cartolalol",
-    storageBucket: "cartolalol.appspot.com",
-    messagingSenderId: "190870168275",
-    appId: "1:190870168275:web:614c727fb470fd09652a26",
-    measurementId: "G-BTQFENJRPX"
+    apiKey: "AIzaSyDA7MktIEXv0UsjECmP0glnmGmmhDVNAtE",
+    authDomain: "cartolol-fd251.firebaseapp.com",
+    databaseURL: "https://cartolol-fd251.firebaseio.com",
+    projectId: "cartolol-fd251",
+    storageBucket: "cartolol-fd251.appspot.com",
+    messagingSenderId: "297128182720",
+    appId: "1:297128182720:web:2faafcdd9290b09fc4be25",
+    measurementId: "G-2T0Y4L8L30"
 };

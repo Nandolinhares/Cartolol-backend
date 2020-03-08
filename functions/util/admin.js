@@ -1,10 +1,10 @@
 const admin = require('firebase-admin');
 
-var serviceAccount = require('../cartolalol-firebase-adminsdk-1sk4y-424400e0d5.json');
+var serviceAccount = require('../cartolol-fd251-firebase-adminsdk-fzu8u-8c2ead95a4.json');
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://cartolalol.firebaseio.com"
+    databaseURL: "https://cartolol-fd251.firebaseio.com"
 });
 
 const db = admin.firestore();

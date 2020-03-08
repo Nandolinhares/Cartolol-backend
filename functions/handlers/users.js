@@ -3,6 +3,7 @@ const { admin, db } = require('../util/admin');
 
 const config = require('../util/config');
 const firebase = require('firebase');
+const BusBoy = require('busboy');
 
 firebase.initializeApp(config);
 //firebase.analytics();
@@ -93,6 +94,8 @@ exports.login = (req, res) => {
         .catch(err => {
             if(err.code == 'auth/user-not-found'){
                 res.status(404).json({ message: 'O usuário não existe' });
+            } else if(err.code === 'auth/wrong-password'){
+                return res.status(400).json({ senha: 'A senha está incorreta' });
             } else {
                 return res.status(500).json({ error: err.code });
             }
@@ -133,12 +136,11 @@ exports.getAuthenticatedUser = (req, res) => {
 
 //Upload image
 exports.uploadImage = (req, res) => {
-    const BusBoy = require('busboy');
     const path = require('path'); //default package installed in every node
     const os = require('os'); //igual
     const fs = require('fs'); //file system
 
-    const busboy = new BusBoy({ headers: req.headers });
+    const busboy = new BusBoy({ headers: req.headers }); 
 
     let imageFileName;
     let imageToBeUploaded = {}; //Empty Object
