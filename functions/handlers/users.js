@@ -19,7 +19,8 @@ exports.signup = (req, res) => {
         email: req.body.email,
         password: req.body.password,
         confirmPassword: req.body.confirmPassword,
-        handle: req.body.handle
+        handle: req.body.handle,
+        administrator: false
     };
     
     const { errors, valid } = validateSignUp(newUser);
@@ -52,6 +53,7 @@ exports.signup = (req, res) => {
             createdAt: new Date().toISOString(),
             handle: newUser.handle,
             imageUrl: `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImg}?alt=media`,
+            administrator: newUser.administrator,
             userId
         }
         return db.doc(`/users/${newUser.handle}`).set(userCredentials);
@@ -77,7 +79,7 @@ exports.login = (req, res) => {
 
     const { valid, errors } = validateLogin(userData);
 
-    if(!valid) {
+    if(!valid) { 
         return res.status(400).json(errors);
     }
 
@@ -106,7 +108,7 @@ exports.updateUserDetails = (req, res) => {
     const { userDetails, errors, valid } = reduceUserDetails(req.body);
 
     if(!valid) {
-        return res.json(errors);
+        return res.status(400).json(errors);
     }
 
     db.doc(`/users/${req.user.handle}`).update(userDetails)

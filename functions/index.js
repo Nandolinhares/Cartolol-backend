@@ -12,6 +12,8 @@ const FBAuth = require('./util/fbAuth');
 
 //User stuff
 const { signup, login, uploadImage, updateUserDetails, getAuthenticatedUser } = require('./handlers/users');
+//Player Stuff
+const { createPlayer, uploadPlayerImage } = require('./handlers/players');
 
 //Post stuff
 const { getAllPosts } = require('./handlers/posts');
@@ -22,6 +24,10 @@ app.post('/login', login);
 app.post('/user/image', FBAuth, uploadImage);
 app.post('/user', FBAuth, updateUserDetails);
 app.get('/user', FBAuth, getAuthenticatedUser);
+
+//Player Routes
+app.post('/player/create', FBAuth, createPlayer);
+app.post('/player/image/:name', FBAuth, uploadPlayerImage);
 
 //Post stuff
 app.get('/posts', FBAuth, getAllPosts);
