@@ -1,7 +1,9 @@
 const { admin, db } = require('../util/admin');
+const { validatePlayers } = require('../util/validators');
 
 const config = require('../util/config');
 const BusBoy = require('busboy');
+
 
 exports.createPlayer = (req, res) => {
 
@@ -17,6 +19,12 @@ exports.createPlayer = (req, res) => {
             price: req.body.price,
             createdAt: new Date().toISOString()
         }
+
+        const { errors, valid } = validatePlayers(playerData);
+
+        if(!valid) {
+            return res.status(400).json(errors);
+        } 
 
         db.collection('players').where('name', '==', playerData.name).get()
             .then(data => {
@@ -51,6 +59,20 @@ exports.createPlayer = (req, res) => {
     } else {
         return res.status(401).json({ message: 'Você não tem autorização para cadastrar um jogador.' });
     }
+}
+
+exports.getAllPlayers = (req, res) => {
+
+    const players = [];
+
+    db.collection('players').get()
+        .then(data => {
+            data.forEach(doc => {
+                players.push(doc.data());
+            })
+            return res.status(200).json(players);
+        })
+        .catch(err => console.error(err));  
 }
 
 //Upload image

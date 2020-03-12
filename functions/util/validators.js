@@ -51,7 +51,7 @@ exports.validateLogin = (userData) => {
     } else if(!isEmail(userData.email)){
         errors.email = 'O email não é válido';
     }
-
+ 
     if(isEmpty(userData.password)){
         errors.password = 'O campo de senha não pode estar vazio';
     }
@@ -75,6 +75,25 @@ exports.reduceUserDetails = (userReq) => {
 
     return {
         userDetails,
+        errors,
+        valid: Object.keys(errors).length === 0 ? true : false 
+    }
+}
+
+exports.validatePlayers = (playerReq) => {
+    let errors = {};
+
+    if(isEmpty(playerReq.name)){
+        errors.name = 'O campo de nome não pode ficar vazio';
+    } 
+    if(isEmpty(playerReq.position)){
+        errors.position = 'O campo não pode ficar vazio';
+    }
+    if(isEmpty(playerReq.team)){
+        errors.team = 'O campo de time não pode ficar vazio';
+    }
+
+    return {
         errors,
         valid: Object.keys(errors).length === 0 ? true : false 
     }
