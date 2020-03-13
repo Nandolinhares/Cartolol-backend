@@ -68,11 +68,37 @@ exports.getAllPlayers = (req, res) => {
     db.collection('players').get()
         .then(data => {
             data.forEach(doc => {
-                players.push(doc.data());
+                players.push({
+                    playerId: doc.id,
+                    name: doc.data().name,
+                    position: doc.data().position,
+                    team: doc.data().team,
+                    price: doc.data().price,
+                    imageUrl: doc.data().imageUrl,
+                    createdAt: doc.data().createdAt
+                });
             })
             return res.status(200).json(players);
         })
         .catch(err => console.error(err));  
+}
+
+exports.getPlayer = (req, res) => {
+    const isAdmin = req.user.administrator;
+    let player = [];
+
+    if(isAdmin){
+        db.collection('players').where('name', '==', req.params.name).get()
+            .then(data => {
+                data.forEach(doc => {
+                    player.push(doc.data());
+                });
+                return res.json(player);
+            })
+            .catch(err => console.error(err));
+    } else {
+        return res.status(401).json({ error: 'Você não tem autorização para isso' });
+    }
 }
 
 //Upload image
@@ -116,9 +142,9 @@ exports.uploadPlayerImage = (req, res) => {
                 const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${imageFileName}?alt=media`;
                 return db.collection(`players`).where('name', '==', req.params.name).get()
                     .then(data => {
-                    data.forEach(doc => {
-                        doc.ref.update({ imageUrl })
-                    })
+                        data.forEach(doc => {
+                            doc.ref.update({ imageUrl })
+                        })
                     })
                     .catch(err => {
                         console.error(err);
