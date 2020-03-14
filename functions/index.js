@@ -35,3 +35,5 @@ app.get('/players/:name', FBAuth, getPlayer);
 app.get('/posts', FBAuth, getAllPosts);
 
 exports.api = functions.region('us-east1').https.onRequest(app);
+
+

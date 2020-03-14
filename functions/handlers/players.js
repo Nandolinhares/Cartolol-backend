@@ -4,6 +4,7 @@ const { validatePlayers } = require('../util/validators');
 const config = require('../util/config');
 const BusBoy = require('busboy');
 
+const firebase = require('firebase');
 
 exports.createPlayer = (req, res) => {
 
@@ -85,13 +86,13 @@ exports.getAllPlayers = (req, res) => {
 
 exports.getPlayer = (req, res) => {
     const isAdmin = req.user.administrator;
-    let player = [];
-
+    let player = {};
+ 
     if(isAdmin){
         db.collection('players').where('name', '==', req.params.name).get()
             .then(data => {
                 data.forEach(doc => {
-                    player.push(doc.data());
+                    player = doc.data();
                 });
                 return res.json(player);
             })
@@ -142,17 +143,27 @@ exports.uploadPlayerImage = (req, res) => {
                 const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${imageFileName}?alt=media`;
                 return db.collection(`players`).where('name', '==', req.params.name).get()
                     .then(data => {
+                        const previousImage = [];
                         data.forEach(doc => {
+                            previousImage.push({
+                                url: doc.data().imageUrl
+                            })
                             doc.ref.update({ imageUrl })
                         })
+                        return previousImage;
                     })
                     .catch(err => {
                         console.error(err);
                         res.status(500).json({ error: err.code });
                     })
             })
-            .then(() => {
-                return res.json({ message: 'Imagem atualizada com sucesso' });
+            .then((previousImage) => {
+                previousImage.forEach(doc => {
+                    admin.storage().bucket(config.storageBucket).file(doc.url.split('/')[7].slice(0,15)).delete();
+                    //Ele deleta fotos em que tem ate 15 caracteres
+                    //09098356487.jpeg  Como os numeros são aleatorios, podem ter alguns que ela nao vai apagar
+                })
+                return res.json({ message: 'Imagem alterada com sucesso' });
             })
             .catch(err => {
                 console.error(err);
