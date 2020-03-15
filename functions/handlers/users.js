@@ -172,10 +172,23 @@ exports.uploadImage = (req, res) => {
         })
         .then(() => {
             const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${imageFileName}?alt=media`;
-            return db.doc(`/users/${req.user.handle}`).update({ imageUrl });
-        })
-        .then(() => {
-            return res.json({ message: 'Imagem atualizada com sucesso' });
+            db.doc(`/users/${req.user.handle}`).get()
+                .then(doc => {
+                    const previousImage = [];
+                    previousImage.push({
+                        url: doc.data().imageUrl
+                    })
+                    doc.ref.update({ imageUrl });
+                    return previousImage;
+                })
+                .then(previousImage => {
+                    previousImage.forEach(doc => {
+                        const foto = `${doc.url.split('.')[4].slice(6)}.${doc.url.split('.')[5].slice(0, doc.url.split('.')[5].indexOf('?'))}`;
+                        admin.storage().bucket(config.storageBucket).file(foto).delete();
+                        //Deleta a foto anterior do jogar
+                    });
+                    return res.json({ message: 'Imagem atualizada com sucesso' });
+                })            
         })
         .catch(err => {
             console.error(err);
