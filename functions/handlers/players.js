@@ -159,9 +159,9 @@ exports.uploadPlayerImage = (req, res) => {
             })
             .then((previousImage) => {
                 previousImage.forEach(doc => {
-                    admin.storage().bucket(config.storageBucket).file(doc.url.split('/')[7].slice(0,15)).delete();
-                    //Ele deleta fotos em que tem ate 15 caracteres
-                    //09098356487.jpeg  Como os numeros são aleatorios, podem ter alguns que ela nao vai apagar
+                    const foto = `${doc.url.split('.')[4].slice(6)}.${doc.url.split('.')[5].slice(0, doc.url.split('.')[5].indexOf('?'))}`;
+                    admin.storage().bucket(config.storageBucket).file(foto).delete();
+                    //Deleta a foto anterior do jogar
                 })
                 return res.json({ message: 'Imagem alterada com sucesso' });
             })
