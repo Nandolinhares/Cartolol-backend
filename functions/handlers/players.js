@@ -4,7 +4,7 @@ const { validatePlayers } = require('../util/validators');
 const config = require('../util/config');
 const BusBoy = require('busboy');
 
-const firebase = require('firebase');
+const { reducePlayerDetails } = require('../util/validators');
 
 exports.createPlayer = (req, res) => {
 
@@ -84,6 +84,32 @@ exports.getAllPlayers = (req, res) => {
         .catch(err => console.error(err));  
 }
 
+exports.updatePlayerDetails = (req, res) => {
+    const isAdmin = req.user.administrator;
+
+    if(isAdmin){
+        const { playerDetails, errors, valid } = reducePlayerDetails(req.body);
+
+        if(!valid) {
+            return res.status(400).json(errors);
+        }
+
+        db.collection('players').where('name', '==', req.params.name).get()
+            .then(data => {
+               data.forEach(doc => {
+                   doc.ref.update(playerDetails);
+               })
+               return res.status(200).json({ message: 'As informações do jogador foram atualizadas' });
+            })
+            .catch(err => {
+                console.error(err);
+                return res.status(500).json({ error: err.code })
+            })
+    } else {
+        return res.status(401).json({ message: 'Você não tem permissão para editar informações dos jogadores' });
+    }
+}
+
 exports.getPlayer = (req, res) => {
     const isAdmin = req.user.administrator;
     let player = {};
@@ -159,11 +185,15 @@ exports.uploadPlayerImage = (req, res) => {
             })
             .then((previousImage) => {
                 previousImage.forEach(doc => {
-                    const foto = `${doc.url.split('.')[4].slice(6)}.${doc.url.split('.')[5].slice(0, doc.url.split('.')[5].indexOf('?'))}`;
-                    admin.storage().bucket(config.storageBucket).file(foto).delete();
-                    //Deleta a foto anterior do jogar
-                })
-                return res.json({ message: 'Imagem alterada com sucesso' });
+                    const photoName = doc.url.split('.')[4].slice(6); // 158941894849
+                    const photoExtension = doc.url.split('.')[5].slice(0, doc.url.split('.')[5].indexOf('?'))//png, jpg, jpeg
+                    const photo = `${photoName}.${photoExtension}`;
+                    if(photo !== 'no-img.png'){
+                        admin.storage().bucket(config.storageBucket).file(photo).delete();
+                    }
+                    //Deleta a foto anterior do usuário
+                });
+                return res.json({ message: 'Imagem atualizada com sucesso' });
             })
             .catch(err => {
                 console.error(err);

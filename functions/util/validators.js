@@ -5,6 +5,10 @@ const isEmpty = (field) => {
     if(field.trim() === '') return true;
     else return false;
 }
+const isEmptyNumber = (field) => {
+    if(field === 0) return true;
+    else return false;
+}
 const isEmail = (email) => {
     const emailRegEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -94,6 +98,39 @@ exports.validatePlayers = (playerReq) => {
     }
 
     return {
+        errors,
+        valid: Object.keys(errors).length === 0 ? true : false 
+    }
+}
+
+exports.reducePlayerDetails = (playerReq) => {
+    //Verificar as informações
+    const playerDetails = {};
+    let errors = {};
+
+    if(!isEmpty(playerReq.name)) {
+        playerDetails.name = playerReq.name
+    } else {
+        errors.name = 'O campo nome não pode estar vazio';
+    };
+    if(!isEmpty(playerReq.position)) {
+        playerDetails.position = playerReq.position
+    } else {
+        errors.position = 'O campo nome não pode estar vazio';
+    };
+    if(!isEmpty(playerReq.team)) {
+        playerDetails.team = playerReq.team
+    } else {
+        errors.name = 'O campo nome não pode estar vazio';
+    };
+    if(!isEmptyNumber(playerReq.price)) {
+        playerDetails.price = playerReq.price
+    } else {
+        errors.name = 'O campo nome não pode estar vazio';
+    };
+
+    return {
+        playerDetails,
         errors,
         valid: Object.keys(errors).length === 0 ? true : false 
     }

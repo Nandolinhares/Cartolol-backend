@@ -13,7 +13,7 @@ const FBAuth = require('./util/fbAuth');
 //User stuff
 const { signup, login, uploadImage, updateUserDetails, getAuthenticatedUser } = require('./handlers/users');
 //Player Stuff
-const { createPlayer, uploadPlayerImage, getAllPlayers, getPlayer } = require('./handlers/players');
+const { createPlayer, uploadPlayerImage, getAllPlayers, getPlayer, updatePlayerDetails } = require('./handlers/players');
 
 //Post stuff
 const { getAllPosts } = require('./handlers/posts');
@@ -30,6 +30,7 @@ app.post('/player/create', FBAuth, createPlayer);
 app.post('/player/image/:name', FBAuth, uploadPlayerImage);
 app.get('/players', FBAuth, getAllPlayers);
 app.get('/players/:name', FBAuth, getPlayer);
+app.post('/player/:name', FBAuth, updatePlayerDetails);
 
 //Post stuff
 app.get('/posts', FBAuth, getAllPosts);

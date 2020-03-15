@@ -183,9 +183,13 @@ exports.uploadImage = (req, res) => {
                 })
                 .then(previousImage => {
                     previousImage.forEach(doc => {
-                        const foto = `${doc.url.split('.')[4].slice(6)}.${doc.url.split('.')[5].slice(0, doc.url.split('.')[5].indexOf('?'))}`;
-                        admin.storage().bucket(config.storageBucket).file(foto).delete();
-                        //Deleta a foto anterior do jogar
+                        const photoName = doc.url.split('.')[4].slice(6); // 158941894849
+                        const photoExtension = doc.url.split('.')[5].slice(0, doc.url.split('.')[5].indexOf('?'))//png, jpg, jpeg
+                        const photo = `${photoName}.${photoExtension}`;
+                        if(photo !== 'no-img.png'){
+                            admin.storage().bucket(config.storageBucket).file(photo).delete();
+                        }
+                        //Deleta a foto anterior do usuário
                     });
                     return res.json({ message: 'Imagem atualizada com sucesso' });
                 })            
