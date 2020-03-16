@@ -4,6 +4,7 @@ const { admin, db } = require('../util/admin');
 const config = require('../util/config');
 const firebase = require('firebase');
 const BusBoy = require('busboy');
+const FieldValue = require('firebase-admin').firestore.FieldValue;
 
 firebase.initializeApp(config);
 //firebase.analytics();
@@ -20,7 +21,9 @@ exports.signup = (req, res) => {
         password: req.body.password,
         confirmPassword: req.body.confirmPassword,
         handle: req.body.handle,
-        administrator: false
+        administrator: false,
+        money: 1000,
+        userTeam: []
     };
     
     const { errors, valid } = validateSignUp(newUser);
@@ -54,6 +57,8 @@ exports.signup = (req, res) => {
             handle: newUser.handle,
             imageUrl: `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImg}?alt=media`,
             administrator: newUser.administrator,
+            money: newUser.money,
+            userTeam: newUser.userTeam,
             userId
         }
         return db.doc(`/users/${newUser.handle}`).set(userCredentials);
@@ -136,6 +141,43 @@ exports.getAuthenticatedUser = (req, res) => {
         })
 }
 
+exports.buyPlayer = (req, res) => {
+    let playerPurchased = {}; //Player comprado
+    let status = {};
+    db.collection('players').where('name', '==', req.params.player).get()
+        .then(data => {
+            data.forEach(doc => {
+                playerPurchased = doc.data();
+            }) 
+            return playerPurchased;
+        })
+        .then(playerPurchased => {
+            db.collection('users').where('handle', '==', req.user.handle).get()
+                .then(data => {
+                    data.forEach(doc => {
+                        if(doc.data().userTeam.length >= 5){
+                            return res.status(400).json({ message: 'Você já tem 5 jogadores' })
+                        } else {
+                             if(doc.data().userTeam.some(array => array.name === req.params.player)){
+                                return res.status(400).json({ message: 'O jogador já existe no seu time' });
+                             } else {
+                                doc.ref.update({"userTeam": FieldValue.arrayUnion(playerPurchased)});
+                                return res.json({ message: 'Jogador comprado com sucesso'});  
+                             }  
+                        }                 
+                    })
+                })
+                .catch(err => {
+                    console.error(err);
+                    res.status(500).json({ error: err.code });
+                })
+        })
+        .catch(err => {
+            console.error(err);
+            return res.status(400).json({ error: err.code });
+        })
+}
+
 //Upload image
 exports.uploadImage = (req, res) => {
     const path = require('path'); //default package installed in every node
@@ -189,7 +231,7 @@ exports.uploadImage = (req, res) => {
                         if(photo !== 'no-img.png'){
                             admin.storage().bucket(config.storageBucket).file(photo).delete();
                         }
-                        //Deleta a foto anterior do usuário
+                        //Delete de previous photo in firebase
                     });
                     return res.json({ message: 'Imagem atualizada com sucesso' });
                 })            
