@@ -143,13 +143,16 @@ exports.getAuthenticatedUser = (req, res) => {
 
 exports.buyPlayer = (req, res) => {
     let playerPurchased = {}; //Player comprado
-    let status = {};
     db.collection('players').where('name', '==', req.params.player).get()
         .then(data => {
             data.forEach(doc => {
                 playerPurchased = doc.data();
             }) 
-            return playerPurchased;
+            if(Object.keys(playerPurchased).length === 0){
+                return res.status(500).json({ message: 'O jogador não existe' });
+            } else {
+                return playerPurchased;
+            }
         })
         .then(playerPurchased => {
             db.collection('users').where('handle', '==', req.user.handle).get()
