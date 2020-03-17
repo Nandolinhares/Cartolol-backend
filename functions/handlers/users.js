@@ -141,6 +141,18 @@ exports.getAuthenticatedUser = (req, res) => {
         })
 }
 
+exports.getUserTeam = (req, res) => {
+    const userTeam = [];
+    db.collection('users').where('handle', '==', req.user.handle).get()
+        .then(data => {
+            data.forEach(doc => {
+                userTeam.push(doc.data().userTeam);
+            })
+            return res.status(200).json(userTeam);
+        })
+        .catch(err => console.error(err));
+}
+
 exports.buyPlayer = (req, res) => {
     let playerPurchased = {}; //Player comprado
     db.collection('players').where('name', '==', req.params.player).get()

@@ -11,7 +11,7 @@ app.use(cors());
 const FBAuth = require('./util/fbAuth');
 
 //User stuff
-const { signup, login, uploadImage, updateUserDetails, getAuthenticatedUser, buyPlayer } = require('./handlers/users');
+const { signup, login, uploadImage, updateUserDetails, getAuthenticatedUser, buyPlayer, getUserTeam } = require('./handlers/users');
 //Player Stuff
 const { createPlayer, uploadPlayerImage, getAllPlayers, getPlayer, updatePlayerDetails } = require('./handlers/players');
 
@@ -25,6 +25,7 @@ app.post('/user/image', FBAuth, uploadImage);
 app.post('/user', FBAuth, updateUserDetails);
 app.get('/user', FBAuth, getAuthenticatedUser);
 app.post('/user/player/:player', FBAuth, buyPlayer);
+app.get('/user/team', FBAuth, getUserTeam);
 
 //Player Routes
 app.post('/player/create', FBAuth, createPlayer);
