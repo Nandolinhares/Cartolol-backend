@@ -199,6 +199,43 @@ exports.buyPlayer = (req, res) => {
         })
 }
 
+exports.removePlayerfromUserTeam = (req, res) => {
+    let player = {};
+    db.collection('players').where('name', '==', req.params.player).get()
+        .then(data => {
+            data.forEach(doc => {
+                player = doc.data();
+            })
+            if(Object.keys(player).length === 0){
+                return res.status(400).json({ message: 'O jogador não existe' });
+            } else {
+                return player;
+            }
+        })
+        .then(player => {
+            db.collection('users').where('handle', '==', req.user.handle).get()
+                .then(data => {
+                    data.forEach(doc => {
+                        if(doc.data().userTeam.some(array => array.name === req.params.player)) {
+                            doc.ref.update({ "userTeam": FieldValue.arrayRemove(player) });
+
+                            let updatedMoney = doc.data().money + player.price;
+                            doc.ref.update({ money: updatedMoney });
+
+                            return res.status(200).json({ message: 'O jogador foi vendido com sucesso' });
+                        } else {
+                            return res.status(400).json({ message: 'Não existe esse jogador no seu time' });
+                        }
+                    });
+                })
+                .catch(err => console.error(err));
+        })
+        .catch(err => {
+            console.error(err);
+            return res.status(500).json({ error: err.code })
+        })
+}
+
 //Upload image
 exports.uploadImage = (req, res) => {
     const path = require('path'); //default package installed in every node
