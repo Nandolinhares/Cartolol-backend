@@ -163,9 +163,15 @@ exports.buyPlayer = (req, res) => {
                         } else {
                              if(doc.data().userTeam.some(array => array.name === req.params.player)){
                                 return res.status(400).json({ message: 'O jogador já existe no seu time' });
-                             } else {
+                             } else if(doc.data().money >= playerPurchased.price) { //Se o dinheiro do usuário for maior que o preço do player
                                 doc.ref.update({"userTeam": FieldValue.arrayUnion(playerPurchased)});
-                                return res.json({ message: 'Jogador comprado com sucesso'});  
+                               
+                                let updatedMoney = doc.data().money - playerPurchased.price; 
+                                
+                                doc.ref.update({ money: updatedMoney  });
+                                return res.json({ message: 'O jogador foi comprado com sucesso' });
+                             } else {
+                                return res.status(400).json({ message: 'Você não tem dinheiro suficiente' }); 
                              }  
                         }                 
                     })
