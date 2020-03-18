@@ -18,6 +18,7 @@ exports.createPlayer = (req, res) => {
             team: req.body.team,
             imageUrl: `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImg}?alt=media`,
             price: req.body.price,
+            playerId: 0,
             createdAt: new Date().toISOString()
         }
 
@@ -44,8 +45,19 @@ exports.createPlayer = (req, res) => {
                 } else {
                     db.collection('players').add(playerData)
                         .then(doc => {
-                            playerData.id = doc.id;
-                            res.json(playerData);
+                            playerId = doc.id;  
+                            return playerId;  
+                            
+                        })
+                        .then(playerId => {
+                            db.collection('players').where('name', '==', playerData.name).get()
+                                .then(data => {
+                                    data.forEach(doc => {
+                                        doc.ref.update({ playerId });
+                                        return res.json(doc.data());
+                                    })
+                                })
+                             
                         })
                         .catch(err => {
                             console.error(err);

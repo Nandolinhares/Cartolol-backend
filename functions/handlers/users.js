@@ -146,7 +146,17 @@ exports.getUserTeam = (req, res) => {
     db.collection('users').where('handle', '==', req.user.handle).get()
         .then(data => {
             data.forEach(doc => {
-                userTeam.push(doc.data().userTeam);
+                doc.data().userTeam.forEach(player => {
+                    userTeam.push({
+                        playerId: player.playerId,
+                        name: player.name,
+                        position: player.position,
+                        team: player.team,
+                        price: player.price,
+                        imageUrl: player.imageUrl,
+                        createdAt: player.createdAt
+                    })
+                })
             })
             return res.status(200).json(userTeam);
         })
