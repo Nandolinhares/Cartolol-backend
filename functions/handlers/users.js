@@ -165,6 +165,28 @@ exports.getUserTeam = (req, res) => {
         .catch(err => console.error(err));
 }
 
+exports.updateUserPoints = (req, res) => {
+    const isAdmin = req.user.administrator;
+
+    if(isAdmin) {
+        db.collection('users').get()
+            .then(data => {
+                data.forEach(doc => {
+                    let newPoints = 0;
+                    doc.data().userTeam.forEach(player => {
+                        newPoints += player.points;
+                    })
+                    weekPoints = doc.data().points + newPoints;
+                    doc.ref.update({ points: weekPoints });
+                })
+                return res.status(200).json({ message: "As pontuações dos membros foram atualizadas" });
+            })
+            .catch(err => console.error(err));
+    } else {
+        return res.status(401).json({ message: 'Você não tem autorização para isso' });
+    }
+}
+
 exports.resetPoints = (req, res) => {
     const isAdmin = req.user.administrator;
 
