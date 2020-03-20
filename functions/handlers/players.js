@@ -19,6 +19,7 @@ exports.createPlayer = (req, res) => {
             imageUrl: `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImg}?alt=media`,
             price: req.body.price,
             playerId: 0,
+            points: 0,
             createdAt: new Date().toISOString()
         }
 
@@ -119,6 +120,26 @@ exports.updatePlayerDetails = (req, res) => {
             })
     } else {
         return res.status(401).json({ message: 'Você não tem permissão para editar informações dos jogadores' });
+    }
+}
+
+exports.updatePlayerPoints = (req, res) => {
+    const isAdmin = req.user.administrator;
+
+    if(isAdmin) {
+        db.collection('players').where('name', '==', req.params.player).get()
+            .then(data => {
+                data.forEach(doc => {
+                    doc.ref.update({ points: req.body.points });
+                });
+                return res.status(200).json({ message: `A pontuação do jogador ${req.params.player} foi atualizada com sucesso` });
+            })
+            .catch(err => {
+                console.error(err);
+                res.status(500).json({ error: 'teste', status: err.code })
+            });
+    } else {
+        return res.status(500).json({ message: 'Você não tem autorização para isso' });
     }
 }
 
