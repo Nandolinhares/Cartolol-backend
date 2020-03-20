@@ -23,7 +23,8 @@ exports.signup = (req, res) => {
         handle: req.body.handle,
         administrator: false,
         money: 1000,
-        userTeam: []
+        userTeam: [],
+        points: 0
     };
     
     const { errors, valid } = validateSignUp(newUser);
@@ -59,6 +60,7 @@ exports.signup = (req, res) => {
             administrator: newUser.administrator,
             money: newUser.money,
             userTeam: newUser.userTeam,
+            points: newUser.points,
             userId
         }
         return db.doc(`/users/${newUser.handle}`).set(userCredentials);
@@ -161,6 +163,23 @@ exports.getUserTeam = (req, res) => {
             return res.status(200).json(userTeam);
         })
         .catch(err => console.error(err));
+}
+
+exports.resetPoints = (req, res) => {
+    const isAdmin = req.user.administrator;
+
+    if(isAdmin) {
+        db.collection('users').get()
+            .then(data => {
+                data.forEach(doc => {
+                    doc.ref.update({ points: 0 })
+                })
+                return res.status(200).json({ message: 'Os pontos de todos os membros foram zerados' });
+            })
+            .catch(err => console.error(err));
+    } else {
+        return res.status(401).json({ message: 'Você não tem autorização para isso' });
+    }
 }
 
 exports.buyPlayer = (req, res) => {
