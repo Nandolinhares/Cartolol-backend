@@ -88,7 +88,8 @@ exports.getAllPlayers = (req, res) => {
                     position: doc.data().position,
                     team: doc.data().team,
                     price: doc.data().price,
-                    imageUrl: doc.data().imageUrl,
+                    points: doc.data().points,
+                    imageUrl: doc.data().imageUrl, 
                     createdAt: doc.data().createdAt
                 });
             })
@@ -123,7 +124,7 @@ exports.updatePlayerDetails = (req, res) => {
     }
 }
 
-exports.updatePlayerPoints = (req, res) => {
+/*exports.updatePlayerPoints = (req, res) => {
     const isAdmin = req.user.administrator;
 
     if(isAdmin) {
@@ -141,7 +142,7 @@ exports.updatePlayerPoints = (req, res) => {
     } else {
         return res.status(500).json({ message: 'Você não tem autorização para isso' });
     }
-}
+}*/
 
 exports.getPlayer = (req, res) => {
     const isAdmin = req.user.administrator;

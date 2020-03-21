@@ -9,6 +9,10 @@ const isEmptyNumber = (field) => {
     if(field === 0) return true;
     else return false;
 }
+const isNegativeNumber = (field) => {
+    if(field < 0) return true;
+    else return false;
+}
 const isEmail = (email) => {
     const emailRegEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -121,12 +125,17 @@ exports.reducePlayerDetails = (playerReq) => {
     if(!isEmpty(playerReq.team)) {
         playerDetails.team = playerReq.team
     } else {
-        errors.name = 'O campo nome não pode estar vazio';
+        errors.team = 'O campo nome não pode estar vazio';
     };
     if(!isEmptyNumber(playerReq.price)) {
         playerDetails.price = playerReq.price
     } else {
         errors.name = 'O campo nome não pode estar vazio';
+    };
+    if(!isNegativeNumber(playerReq.points)) {
+        playerDetails.points = playerReq.points
+    } else {
+        errors.points = 'O campo nome não pode estar vazio ou número negativo';
     };
 
     return {

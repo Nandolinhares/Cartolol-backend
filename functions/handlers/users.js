@@ -173,7 +173,7 @@ exports.updateUserPoints = (req, res) => {
             .then(data => {
                 data.forEach(doc => {
                     let newPoints = 0;
-                    doc.data().userTeam.forEach(player => {
+                    doc.data().userTeam.forEach(player => { 
                         newPoints += player.points;
                     })
                     weekPoints = doc.data().points + newPoints;
