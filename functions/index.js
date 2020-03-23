@@ -28,7 +28,7 @@ app.post('/login', login);
 app.post('/user/image', FBAuth, uploadImage);
 app.post('/user', FBAuth, updateUserDetails);
 app.get('/user', FBAuth, getAuthenticatedUser);
-app.post('/user/player/:player', FBAuth, buyPlayer);
+app.post('/user/player/:player/:playerPosition', FBAuth, buyPlayer);
 app.get('/user/team', FBAuth, getUserTeam);
 app.delete('/user/:player/delete', FBAuth, removePlayerfromUserTeam);
 app.post('/users/reset', FBAuth, resetPoints);
@@ -40,7 +40,7 @@ app.post('/player/image/:name', FBAuth, uploadPlayerImage);
 app.get('/players', FBAuth, getAllPlayers);
 app.get('/players/:name', FBAuth, getPlayer);
 app.post('/player/:name', FBAuth, updatePlayerDetails);
-app.post('/players/:player/updatePoints', FBAuth, updatePlayerPoints);
+//app.post('/players/:player/updatePoints', FBAuth, updatePlayerPoints);
 
 //Post stuff
 app.get('/posts', FBAuth, getAllPosts);

@@ -156,6 +156,7 @@ exports.getUserTeam = (req, res) => {
                         team: player.team,
                         price: player.price,
                         imageUrl: player.imageUrl,
+                        points: player.points,
                         createdAt: player.createdAt
                     })
                 })
@@ -226,6 +227,8 @@ exports.buyPlayer = (req, res) => {
                         } else {
                              if(doc.data().userTeam.some(array => array.name === req.params.player)){
                                 return res.status(400).json({ message: 'O jogador já existe no seu time' });
+                             } else if(doc.data().userTeam.some(array => array.position === req.params.playerPosition)) {
+                                return res.status(400).json({ message: `Você já possui um ${req.params.playerPosition} no seu time` });
                              } else if(doc.data().money >= playerPurchased.price) { //Se o dinheiro do usuário for maior que o preço do player
                                 doc.ref.update({"userTeam": FieldValue.arrayUnion(playerPurchased)});
                                
