@@ -144,3 +144,22 @@ exports.reducePlayerDetails = (playerReq) => {
         valid: Object.keys(errors).length === 0 ? true : false 
     }
 }
+
+exports.validateResetPassword = (emailReq) => {
+    let errors = {};
+    let email = {};
+
+    if(isEmpty(emailReq.email)) {
+        errors.email = 'O campo não pode ficar vazio';
+    } else if(isEmail(emailReq.email)) {
+        email.email = emailReq.email;
+    } else {
+        errors.email = 'Esse email não existe';
+    }
+
+    return {
+        email,
+        errors,
+        valid: Object.keys(errors).length === 0 ? true : false
+    }
+}

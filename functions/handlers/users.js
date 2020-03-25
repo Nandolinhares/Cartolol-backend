@@ -11,7 +11,7 @@ firebase.initializeApp(config);
 
 
 //Validators
-const { validateSignUp, validateLogin, reduceUserDetails } = require('../util/validators');
+const { validateSignUp, validateLogin, reduceUserDetails, validateResetPassword } = require('../util/validators');
 
 exports.signup = (req, res) => {
     //Informações do usuário a ser cadastrado
@@ -113,9 +113,14 @@ exports.login = (req, res) => {
 
 exports.resetUserPassword = (req, res) => {
     var auth = firebase.auth();
-    var email = req.body.email;
 
-    auth.sendPasswordResetEmail(email)
+    const { email, valid, errors } = validateResetPassword(req.body);
+
+    if(!valid){
+        return res.status(400).json(errors);
+    }
+
+    auth.sendPasswordResetEmail(email.email)
         .then(() => {
             return res.status(200).json({ message: 'As informações para mudar sua senha foram enviadas com sucesso' });
         })
