@@ -127,6 +127,8 @@ exports.resetUserPassword = (req, res) => {
         .catch(err => {
             if(err.code === 'auth/user-not-found') {
                 return res.status(400).json({ message: 'Não existe conta registrada com esse email' });
+            } else if(err.code === 'auth/too-many-requests') {
+                return res.status(500).json({ message: 'Você tentou alterar a senha muitas vezes. Tente mais tarde' });
             } else {
                 console.error(err);
             }
