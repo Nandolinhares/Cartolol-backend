@@ -111,6 +111,23 @@ exports.login = (req, res) => {
         })
 }
 
+exports.resetUserPassword = (req, res) => {
+    var auth = firebase.auth();
+    var email = req.body.email;
+
+    auth.sendPasswordResetEmail(email)
+        .then(() => {
+            return res.status(200).json({ message: 'As informações para mudar sua senha foram enviadas com sucesso' });
+        })
+        .catch(err => {
+            if(err.code === 'auth/user-not-found') {
+                return res.status(400).json({ message: 'Não existe conta registrada com esse email' });
+            } else {
+                console.error(err);
+            }
+        });
+}
+
 exports.updateUserDetails = (req, res) => {
     const { userDetails, errors, valid } = reduceUserDetails(req.body);
 
