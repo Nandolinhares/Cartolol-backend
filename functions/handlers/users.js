@@ -111,6 +111,18 @@ exports.login = (req, res) => {
         })
 }
 
+exports.getUsersByPoints = (req, res) => {
+    db.collection('users').orderBy("points", "desc").limit(10).get()
+        .then(data => {
+            let userData = [];
+            data.forEach(doc => {
+                userData.push(doc.data());
+            })
+            return res.json(userData);
+        })
+        .catch(err => console.error(err));
+}
+
 exports.resetUserPassword = (req, res) => {
     var auth = firebase.auth();
 

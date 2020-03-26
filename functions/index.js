@@ -15,7 +15,8 @@ const FBAuth = require('./util/fbAuth');
 
 //User stuff
 const { signup, login, uploadImage, updateUserDetails, getAuthenticatedUser, 
-        buyPlayer, getUserTeam, removePlayerfromUserTeam, resetPoints, updateUserPoints, resetUserPassword } = require('./handlers/users');
+        buyPlayer, getUserTeam, removePlayerfromUserTeam, resetPoints, updateUserPoints, resetUserPassword,
+        getUsersByPoints } = require('./handlers/users');
 //Player Stuff
 const { createPlayer, uploadPlayerImage, getAllPlayers, getPlayer, updatePlayerDetails, updatePlayerPoints } = require('./handlers/players');
 
@@ -34,6 +35,7 @@ app.delete('/user/:player/delete', FBAuth, removePlayerfromUserTeam);
 app.post('/users/reset', FBAuth, resetPoints);
 app.post('/users/updatePoints', FBAuth, updateUserPoints);
 app.post('/resetUserPassword', resetUserPassword);
+app.get('/users/position', getUsersByPoints);
 
 //Player Routes
 app.post('/player/create', FBAuth, createPlayer);
