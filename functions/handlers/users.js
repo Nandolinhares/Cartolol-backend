@@ -123,6 +123,25 @@ exports.getUsersByPoints = (req, res) => {
         .catch(err => console.error(err));
 }
 
+exports.getUserProfile = (req, res) => {
+    db.collection('users').where('handle', '==', req.params.handle).get()
+        .then(data => {
+            let userInformation = [];
+            data.forEach(doc => {
+                userInformation.push({
+                    name: doc.data().name,
+                    handle: doc.data().handle,
+                    imageUrl: doc.data().imageUrl,
+                    userTeam: doc.data().userTeam,
+                    points: doc.data().points,
+                    userId: doc.data().userId
+                })
+            })
+            return res.json(userInformation);
+        })
+        .catch(err => console.error(err));
+}
+
 exports.resetUserPassword = (req, res) => {
     var auth = firebase.auth();
 

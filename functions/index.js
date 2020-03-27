@@ -16,9 +16,12 @@ const FBAuth = require('./util/fbAuth');
 //User stuff
 const { signup, login, uploadImage, updateUserDetails, getAuthenticatedUser, 
         buyPlayer, getUserTeam, removePlayerfromUserTeam, resetPoints, updateUserPoints, resetUserPassword,
-        getUsersByPoints } = require('./handlers/users');
+        getUsersByPoints, getUserProfile } = require('./handlers/users');
 //Player Stuff
 const { createPlayer, uploadPlayerImage, getAllPlayers, getPlayer, updatePlayerDetails, updatePlayerPoints } = require('./handlers/players');
+
+//Leagues Stuff
+const { createLeague } = require('./handlers/leagues');
 
 //Post stuff
 const { getAllPosts } = require('./handlers/posts');
@@ -36,6 +39,7 @@ app.post('/users/reset', FBAuth, resetPoints);
 app.post('/users/updatePoints', FBAuth, updateUserPoints);
 app.post('/resetUserPassword', resetUserPassword);
 app.get('/users/position', getUsersByPoints);
+app.get('/users/profile/:handle', getUserProfile);
 
 //Player Routes
 app.post('/player/create', FBAuth, createPlayer);
@@ -44,6 +48,9 @@ app.get('/players', FBAuth, getAllPlayers);
 app.get('/players/:name', FBAuth, getPlayer);
 app.post('/player/:name', FBAuth, updatePlayerDetails);
 //app.post('/players/:player/updatePoints', FBAuth, updatePlayerPoints);
+
+//Leagues Routes
+app.post('/leagues/create', FBAuth, createLeague);
 
 //Post stuff
 app.get('/posts', FBAuth, getAllPosts);
