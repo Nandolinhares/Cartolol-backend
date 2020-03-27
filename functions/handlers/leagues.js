@@ -109,3 +109,48 @@ exports.getMyLeagues = (req, res) => {
                 })
         })
 }
+
+exports.getUserLeagues = (req, res) => {
+    db.collection('leagues').get()
+        .then(data => {
+            let userLeagues = [];
+            data.forEach(doc => {
+                if(doc.data().creatorHandle === req.params.handle) {
+                    userLeagues.push(doc.data());
+                }
+            })
+            return userLeagues;
+        })
+        .then(userLeagues => {
+            db.collection('leagues').get()
+                .then(data => {
+                    data.forEach(doc => {
+                        if(doc.data().friends.some(array => array.handle === req.params.handle)) {
+                            userLeagues.push(doc.data());
+                        } 
+                    })
+                    if(Object.keys(userLeagues).length > 0) {
+                        return res.json(userLeagues);
+                    } else {
+                        return res.json({ message: `O usuário ${req.params.handle} não participa de ligas` });
+                    }
+                })
+        })
+        .catch(err => console.error(err));
+}
+
+exports.getOneLeague = (req, res) => {
+    db.collection('leagues').where('name', '==', req.params.league).get()
+        .then(data => {
+            let league = {};
+            data.forEach(doc => {
+                league = doc.data();
+            })
+            if(Object.keys(league).length > 0) {
+                return res.json(league);
+            } else {
+                return res.status(400).json({ message: 'A liga que você procura não existe' });
+            }
+        })
+        .catch(err => console.error(err));
+}
