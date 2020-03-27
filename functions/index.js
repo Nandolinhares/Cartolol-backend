@@ -21,7 +21,7 @@ const { signup, login, uploadImage, updateUserDetails, getAuthenticatedUser,
 const { createPlayer, uploadPlayerImage, getAllPlayers, getPlayer, updatePlayerDetails, updatePlayerPoints } = require('./handlers/players');
 
 //Leagues Stuff
-const { createLeague } = require('./handlers/leagues');
+const { createLeague, addFriendToLeague } = require('./handlers/leagues');
 
 //Post stuff
 const { getAllPosts } = require('./handlers/posts');
@@ -51,6 +51,7 @@ app.post('/player/:name', FBAuth, updatePlayerDetails);
 
 //Leagues Routes
 app.post('/leagues/create', FBAuth, createLeague);
+app.post('/leagues/addFriend/:handleFriend', FBAuth, addFriendToLeague);
 
 //Post stuff
 app.get('/posts', FBAuth, getAllPosts);
