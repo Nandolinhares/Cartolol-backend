@@ -51,21 +51,20 @@ exports.addFriendToLeague = (req, res) => {
         })
         .then(myFriend => {
             db.collection('leagues').where('creatorHandle', '==', req.user.handle).get()
-            .then(data => {
-                let errors = {};
-                data.forEach(doc => {
-                    if(!doc.exists) {
-                        errors.status = true;
-                        errors.message = 'Você não possui nenhuma liga'
+                .then(data => {
+                    let errors = {};
+                    data.forEach(doc => {
+                        errors = doc.data();          
+                    });
+                    if(Object.keys(errors).length === 0){
+                        return res.status(500).json({ message: 'Você não tem uma liga' });
+                    } else {
+                        return myFriend;
                     }
-                });
-                return errors;
-            })
-            .then(errors => {
-                if(errors.status === true) {
-                    return res.status(400).json(errors);
-                } else {
-                    db.collection('leagues').where('creatorHandle', '==', req.user.handle).get()
+                })
+                .then(myFriend => {   
+                    db.collection('leagues').where('creatorHandle', '==', req.user.handle)
+                        .where('name', '==', req.params.league).get()
                         .then(data => {
                             data.forEach(doc => {
                                 if(doc.data().friends.some(array => array.handle === req.params.handleFriend)){
@@ -76,11 +75,22 @@ exports.addFriendToLeague = (req, res) => {
                                 }
                             })
                         })
+                    }
+                )
+                .catch(err => {
+                    console.error(err);
+                    res.status(500).json({ error: err.code });
+                });
+            })
+}
+
+exports.getMyLeagues = (req, res) => {
+    db.collection('leagues').where('handleCreator', '==', req.user.handle)
+        .then(data => {
+            data.forEach(doc => {
+                if(doc.exists) {
+
                 }
             })
-            .catch(err => {
-                console.error(err);
-                res.status(500).json({ error: err.code });
-            });
         })
 }
