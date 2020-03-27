@@ -85,12 +85,27 @@ exports.addFriendToLeague = (req, res) => {
 }
 
 exports.getMyLeagues = (req, res) => {
-    db.collection('leagues').where('handleCreator', '==', req.user.handle)
+    db.collection('leagues').where('creatorHandle', '==', req.user.handle).get()
         .then(data => {
+            let myLeagues = [];
             data.forEach(doc => {
-                if(doc.exists) {
-
-                }
+                myLeagues.push(doc.data());
             })
+            return myLeagues;
+        })
+        .then(myLeagues => {
+            db.collection('leagues').get()
+                .then(data => {
+                    data.forEach(doc => {
+                        if(doc.data().friends.some(array => array.handle === req.user.handle)) {
+                            myLeagues.push(doc.data());
+                        }
+                    });
+                    if(Object.keys(myLeagues).length > 0) {
+                        return res.json(myLeagues);
+                    } else {
+                        return res.json({ message: 'Você não participa de nenhuma liga' });
+                    }
+                })
         })
 }
