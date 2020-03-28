@@ -14,6 +14,10 @@ exports.createLeague = (req, res) => {
         createdAt: new Date().toISOString()
     }
 
+    // const leagueLeader = {
+    //     handle: leagueDetails.creatorHandle
+    // }
+
     db.doc(`/leagues/${leagueDetails.name}`).get()
         .then(doc => {
             let errors = {};
@@ -108,6 +112,7 @@ exports.getMyLeagues = (req, res) => {
                     }
                 })
         })
+        .catch(err => console.error(err));
 }
 
 exports.getUserLeagues = (req, res) => {

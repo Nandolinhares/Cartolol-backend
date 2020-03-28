@@ -52,7 +52,7 @@ app.post('/player/:name', FBAuth, updatePlayerDetails);
 //Leagues Routes
 app.post('/leagues/create', FBAuth, createLeague);
 app.post('/leagues/addFriend/:league/:handleFriend', FBAuth, addFriendToLeague);
-app.get('/leagues', FBAuth, getMyLeagues);
+app.get('/user/leagues', FBAuth, getMyLeagues);
 app.get('/user/leagues/:handle', getUserLeagues);
 app.get('/leagues/:league', getOneLeague);
 
@@ -84,3 +84,23 @@ exports.api = functions.region('us-east1').https.onRequest(app);
         }
     })
 
+exports.onUserDetailsChange = functions.region('us-east1').firestore.document('/users/{userId}')
+.onUpdate((change) => {
+
+    let batch = db.batch();
+
+    if(change.before.data() !== change.after.data()){
+        db.collection('leagues').where("friends", "array-contains" , change.before.data()).get()
+            .then(data => {
+                data.forEach(doc => {
+                    const league = db.doc(`/leagues/${doc.data().name}`);
+                    batch.update(league, { friends: FieldValue.arrayRemove(change.before.data()) });
+                    batch.update(league, { friends: FieldValue.arrayUnion(change.after.data()) });
+                })
+                return batch.commit();
+            })
+            .catch(err => console.error(err));
+    } else {
+        return true;
+    }
+})
