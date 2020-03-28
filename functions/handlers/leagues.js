@@ -14,9 +14,11 @@ exports.createLeague = (req, res) => {
         createdAt: new Date().toISOString()
     }
 
-    // const leagueLeader = {
-    //     handle: leagueDetails.creatorHandle
-    // }
+    const leagueLeader = {
+        handle: leagueDetails.creatorHandle,
+        imageUrl: leagueDetails.creatorImageUrl,
+        points: leagueDetails.creatorPoints
+    }
 
     db.doc(`/leagues/${leagueDetails.name}`).get()
         .then(doc => {
@@ -33,7 +35,15 @@ exports.createLeague = (req, res) => {
             } else {
                 db.doc(`/leagues/${leagueDetails.name}`).set(leagueDetails)
                     .then(doc => {
-                        return res.status(200).json({ message: 'A liga foi criado com sucesso' });
+                        leagueId = doc.id;
+                        return leagueId;
+                    })
+                    .then(leagueId => {
+                        db.doc(`/leagues/${leagueDetails.name}`).get()
+                            .then(doc => {
+                                doc.ref.update({"friends": FieldValue.arrayUnion(leagueLeader)});
+                                return res.status(200).json({ message: 'A liga foi criado com sucesso' });
+                            })
                     })
             }
         })
@@ -89,28 +99,24 @@ exports.addFriendToLeague = (req, res) => {
 }
 
 exports.getMyLeagues = (req, res) => {
-    db.collection('leagues').where('creatorHandle', '==', req.user.handle).get()
+    db.collection('leagues').get()
         .then(data => {
             let myLeagues = [];
             data.forEach(doc => {
-                myLeagues.push(doc.data());
-            })
-            return myLeagues;
-        })
-        .then(myLeagues => {
-            db.collection('leagues').get()
-                .then(data => {
-                    data.forEach(doc => {
-                        if(doc.data().friends.some(array => array.handle === req.user.handle)) {
-                            myLeagues.push(doc.data());
-                        }
-                    });
-                    if(Object.keys(myLeagues).length > 0) {
-                        return res.json(myLeagues);
-                    } else {
-                        return res.json({ message: 'Você não participa de nenhuma liga' });
-                    }
+                if(doc.data().friends.some(array => array.handle === req.user.handle)) {
+                    myLeagues.push(doc.data());
+                }
+            });
+            if(Object.keys(myLeagues).length > 0) {
+                myLeagues.forEach((league, i) => {
+                    myLeagues[i].friends.sort(function(a, b){
+                        return a.points - b.points
+                    }).reverse()
                 })
+                return res.json(myLeagues);
+            } else {
+                return res.json({ message: 'Você não participa de nenhuma liga' });
+            }
         })
         .catch(err => console.error(err));
 }
