@@ -14,12 +14,6 @@ exports.createLeague = (req, res) => {
         createdAt: new Date().toISOString()
     }
 
-    const leagueLeader = {
-        handle: leagueDetails.creatorHandle,
-        imageUrl: leagueDetails.creatorImageUrl,
-        points: leagueDetails.creatorPoints
-    }
-
     db.doc(`/leagues/${leagueDetails.name}`).get()
         .then(doc => {
             let errors = {};
@@ -39,10 +33,24 @@ exports.createLeague = (req, res) => {
                         return leagueId;
                     })
                     .then(leagueId => {
-                        db.doc(`/leagues/${leagueDetails.name}`).get()
-                            .then(doc => {
-                                doc.ref.update({"friends": FieldValue.arrayUnion(leagueLeader)});
-                                return res.status(200).json({ message: 'A liga foi criado com sucesso' });
+                        db.collection('users').where('handle', '==', req.user.handle).get()
+                            .then(data => {
+                                let user = {};
+                                data.forEach(doc => {
+                                    user = doc.data();
+                                });
+                                if(Object.keys(user).length > 0) {
+                                    return user;
+                                } else {
+                                    return res.status(400).json({ message: 'Usuário não encontrado' });
+                                }
+                            })
+                            .then(user => {
+                                db.doc(`/leagues/${leagueDetails.name}`).get()
+                                    .then(doc => {
+                                        doc.ref.update({ "friends": FieldValue.arrayUnion(user) });
+                                        return res.json({ message: 'A liga foi criada com sucesso' });
+                                    })
                             })
                     })
             }
