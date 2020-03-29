@@ -66,33 +66,30 @@ exports.api = functions.region('us-east1').https.onRequest(app);
  exports.onPlayerDetailsChange = functions.region('us-east1').firestore.document('/players/{playerId}')
     .onUpdate((change) => {
 
-        let batch = db.batch();
-
         if(change.before.data() !== change.after.data()){
-            db.collection('users').where("userTeam", "array-contains" , change.before.data()).get()
+           const batch = db.batch();
+           return db.collection('users').where("userTeam", "array-contains" , change.before.data()).get()
                 .then(data => {
                     data.forEach(doc => {
                         const user = db.doc(`/users/${doc.id}`);
                         batch.update(user, { userTeam: FieldValue.arrayRemove(change.before.data()) });
                         batch.update(user, { userTeam: FieldValue.arrayUnion(change.after.data()) });
-                    })
-                    return batch.commit();
-                })
-                .catch(err => console.error(err));
+                    });
+                    return batch.commit();  
+                });
         } else {
             return true;
         }
-    })
+    });
 
 exports.onUserDetailsChange = functions.region('us-east1').firestore.document('/users/{userId}')
 .onUpdate((change) => {
 
-    let batch = db.batch();
-
     if(change.before.data() !== change.after.data()){
-        db.collection('leagues').where("friends", "array-contains" , change.before.data()).get()
+        const batch = db.batch();
+        return db.collection('leagues').where("friends", "array-contains" , change.before.data()).get()
             .then(data => {
-                data.forEach(doc => {
+                 data.forEach(doc => {
                     const league = db.doc(`/leagues/${doc.data().name}`);
                     batch.update(league, { friends: FieldValue.arrayRemove(change.before.data()) });
                     batch.update(league, { friends: FieldValue.arrayUnion(change.after.data()) });
