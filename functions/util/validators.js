@@ -163,3 +163,21 @@ exports.validateResetPassword = (emailReq) => {
         valid: Object.keys(errors).length === 0 ? true : false
     }
 }
+
+exports.reduceLeagueDetails = (leagueReq) => {
+    //Verificar as informações
+    const leagueDetails = {};
+    let errors = {};
+
+    if(!isEmpty(leagueReq.name)) {
+        leagueDetails.name = leagueReq.name
+    } else {
+        errors.name = 'O campo nome da liga não pode estar vazio';
+    };
+
+    return {
+        leagueDetails,
+        errors,
+        valid: Object.keys(errors).length === 0 ? true : false 
+    }
+}

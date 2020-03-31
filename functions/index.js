@@ -50,7 +50,7 @@ app.post('/player/:name', FBAuth, updatePlayerDetails);
 //app.post('/players/:player/updatePoints', FBAuth, updatePlayerPoints);
 
 //Leagues Routes
-app.post('/leagues/create', FBAuth, createLeague);
+app.post('/leagues/create', FBAuth, createLeague); 
 app.post('/leagues/addFriend/:league/:handleFriend', FBAuth, addFriendToLeague);
 app.get('/user/leagues', FBAuth, getMyLeagues);
 app.get('/user/leagues/:handle', getUserLeagues);

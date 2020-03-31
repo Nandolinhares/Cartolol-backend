@@ -2,6 +2,8 @@ const { admin, db } = require('../util/admin');
 const config = require('../util/config');
 const FieldValue = require('firebase-admin').firestore.FieldValue;
 
+const { reduceLeagueDetails } = require('../util/validators');
+
 exports.createLeague = (req, res) => {
     const leagueDetails = {
         name: req.body.name,
@@ -14,12 +16,17 @@ exports.createLeague = (req, res) => {
         createdAt: new Date().toISOString()
     }
 
+    const { errors, valid } = reduceLeagueDetails(leagueDetails);
+    if(!valid) {
+        return res.status(400).json(errors);
+    }
+
     db.doc(`/leagues/${leagueDetails.name}`).get()
         .then(doc => {
             let errors = {};
             if(doc.exists) {
                 errors.status = true;
-                errors.message = 'Já existe uma liga com esse nome';
+                errors.name = 'Já existe uma liga com esse nome';
             }
             return errors;
         })
@@ -37,7 +44,7 @@ exports.createLeague = (req, res) => {
                             .then(data => {
                                 let user = {};
                                 data.forEach(doc => {
-                                    user = doc.data();
+                                    user = doc.data(); 
                                 });
                                 if(Object.keys(user).length > 0) {
                                     return user;
@@ -129,31 +136,20 @@ exports.getMyLeagues = (req, res) => {
         .catch(err => console.error(err));
 }
 
-exports.getUserLeagues = (req, res) => {
+exports.getUserLeagues = (req, res) => {  
     db.collection('leagues').get()
         .then(data => {
-            let userLeagues = [];
+            let userLeagues = []; 
             data.forEach(doc => {
-                if(doc.data().creatorHandle === req.params.handle) {
+                if(doc.data().friends.some(array => array.handle === req.params.handle)) {
                     userLeagues.push(doc.data());
-                }
+                }  
             })
-            return userLeagues;
-        })
-        .then(userLeagues => {
-            db.collection('leagues').get()
-                .then(data => {
-                    data.forEach(doc => {
-                        if(doc.data().friends.some(array => array.handle === req.params.handle)) {
-                            userLeagues.push(doc.data());
-                        } 
-                    })
-                    if(Object.keys(userLeagues).length > 0) {
-                        return res.json(userLeagues);
-                    } else {
-                        return res.json({ message: `O usuário ${req.params.handle} não participa de ligas` });
-                    }
-                })
+            if(Object.keys(userLeagues).length > 0) {
+                return res.json(userLeagues);
+            } else {
+                return res.json({ message: `O usuário ${req.params.handle} não participa de ligas` });
+            }
         })
         .catch(err => console.error(err));
 }
