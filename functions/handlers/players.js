@@ -240,3 +240,81 @@ exports.uploadPlayerImage = (req, res) => {
 
     busboy.end(req.rawBody);
 };
+
+exports.getSups = (req, res) => {
+    db.collection('players').where('position', '==', 'Sup').get()
+        .then(data => {
+            let sups = [];
+            data.forEach(doc => {
+                sups.push(doc.data());
+            });
+            if(Object.keys(sups).length > 0) {
+                return res.json(sups);
+            } else {
+                return res.status(400).json({ message: 'Não existem suportes cadastrados' });
+            }
+        })
+        .catch(err => console.error(err));
+}
+
+exports.getADCs = (req, res) => {
+    db.collection('players').where('position', '==', 'Adc').get()
+        .then(data => {
+            let adcs = [];
+            data.forEach(doc => {
+                adcs.push(doc.data());
+            });
+            if(Object.keys(adcs).length > 0) {
+                return res.json(adcs);
+            } else {
+                return res.status(400).json({ message: 'Não existem adcs cadastrados' });
+            }
+        })
+        .catch(err => console.error(err));
+}
+
+exports.getMids = (req, res) => {
+    db.collection('players').where('position', '==', 'Mid').get()
+        .then(data => {
+            let mids = [];
+            data.forEach(doc => {
+                mids.push(doc.data());
+            });
+            if(Object.keys(mids).length > 0) {
+                return res.json(mids);
+            } else {
+                return res.status(400).json({ message: 'Não existem mids cadastrados' });
+            }
+        })
+        .catch(err => console.error(err));
+}
+
+exports.getJunglers = (req, res) => {
+    db.collection('players').where('position', '==', 'Jungler').get()
+        .then(data => {
+            let jgs = [];
+            data.forEach(doc => {
+                jgs.push(doc.data());
+            });
+            if(Object.keys(jgs).length > 0) {
+                return res.json(jgs);
+            } else {
+                return res.status(400).json({ message: 'Não existem junglers cadastrados' });
+            }
+        })
+}
+
+exports.getTops = (req, res) => {
+    db.collection('players').where('position', '==', 'Top').get()
+        .then(data => {
+            let tops = [];
+            data.forEach(doc => {
+                tops.push(doc.data());
+            });
+            if(Object.keys(tops).length > 0) {
+                return res.json(tops);
+            } else {
+                return res.status(400).json({ message: 'Não existem tops cadastrados' });
+            }
+        })
+}

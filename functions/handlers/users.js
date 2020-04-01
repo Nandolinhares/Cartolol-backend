@@ -138,7 +138,11 @@ exports.getUserProfile = (req, res) => {
                     userId: doc.data().userId
                 })
             })
-            return res.json(userInformation);
+            if(Object.keys(userInformation).length > 0) {
+                return res.json(userInformation);
+            } else {
+                return res.status(400).json({ message: 'O usuário não existe' });
+            }
         })
         .catch(err => console.error(err));
 }

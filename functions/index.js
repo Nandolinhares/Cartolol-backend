@@ -18,7 +18,8 @@ const { signup, login, uploadImage, updateUserDetails, getAuthenticatedUser,
         buyPlayer, getUserTeam, removePlayerfromUserTeam, resetPoints, updateUserPoints, resetUserPassword,
         getUsersByPoints, getUserProfile } = require('./handlers/users');
 //Player Stuff
-const { createPlayer, uploadPlayerImage, getAllPlayers, getPlayer, updatePlayerDetails, updatePlayerPoints } = require('./handlers/players');
+const { createPlayer, uploadPlayerImage, getAllPlayers, getPlayer, 
+        updatePlayerDetails, updatePlayerPoints, getSups, getADCs, getMids, getJunglers, getTops } = require('./handlers/players');
 
 //Leagues Stuff
 const { createLeague, addFriendToLeague, getMyLeagues, getUserLeagues, getOneLeague, removeUserFromLeague } = require('./handlers/leagues');
@@ -47,6 +48,11 @@ app.post('/player/image/:name', FBAuth, uploadPlayerImage);
 app.get('/players', FBAuth, getAllPlayers);
 app.get('/players/:name', FBAuth, getPlayer);
 app.post('/player/:name', FBAuth, updatePlayerDetails);
+app.get('/player/sups', getSups);
+app.get('/player/adcs', getADCs);
+app.get('/player/mids', getMids);
+app.get('/player/jgs', getJunglers);
+app.get('/player/tops', getTops);
 //app.post('/players/:player/updatePoints', FBAuth, updatePlayerPoints);
 
 //Leagues Routes
