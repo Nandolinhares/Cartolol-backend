@@ -134,6 +134,7 @@ exports.getUserProfile = (req, res) => {
                     imageUrl: doc.data().imageUrl,
                     userTeam: doc.data().userTeam,
                     points: doc.data().points,
+                    createdAt: doc.data().createdAt,
                     userId: doc.data().userId
                 })
             })

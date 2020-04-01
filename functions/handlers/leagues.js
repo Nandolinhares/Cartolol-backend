@@ -148,7 +148,7 @@ exports.getUserLeagues = (req, res) => {
             if(Object.keys(userLeagues).length > 0) {
                 return res.json(userLeagues);
             } else {
-                return res.json({ message: `O usuário ${req.params.handle} não participa de ligas` });
+                return res.status(500).json({ message: `O usuário ${req.params.handle} não participa de ligas` });
             }
         })
         .catch(err => console.error(err));
@@ -157,9 +157,9 @@ exports.getUserLeagues = (req, res) => {
 exports.getOneLeague = (req, res) => {
     db.collection('leagues').where('name', '==', req.params.league).get()
         .then(data => {
-            let league = {};
+            let league = [];
             data.forEach(doc => {
-                league = doc.data();
+                league.push(doc.data());
             })
             if(Object.keys(league).length > 0) {
                 return res.json(league);
@@ -168,4 +168,29 @@ exports.getOneLeague = (req, res) => {
             }
         })
         .catch(err => console.error(err));
+}
+
+exports.removeUserFromLeague = (req, res) => {
+    let myFriend = {};
+    db.doc(`/users/${req.params.handle}`).get()
+        .then(doc => {
+            myFriend = doc.data();
+            return myFriend;
+        })
+        .then(myFriend => {
+            db.collection('leagues').where('creatorHandle', '==', req.user.handle).where('name', '==', req.params.league).get()
+                .then(data => {
+                    let leagueName = '';
+                    data.forEach(doc => {
+                        if(doc.data().friends.some(array => array.name === myFriend.name)) {
+                            doc.ref.update({"friends": FieldValue.arrayRemove(myFriend)});
+                            leagueName = doc.data().name;
+                            return res.status(200).json({ message: `O amigo ${myFriend.name} foi removido da liga ${leagueName}` });
+                        } else {
+                            return res.status(400).json({ message: 'O membro não está na liga' });
+                        }
+                    })
+                })
+        })
+        .catch(err => console.error(err));   
 }
