@@ -182,7 +182,9 @@ exports.removeUserFromLeague = (req, res) => {
                 .then(data => {
                     let leagueName = '';
                     data.forEach(doc => {
-                        if(doc.data().friends.some(array => array.name === myFriend.name)) {
+                        if(doc.data().creatorHandle === myFriend.handle) {
+                            return res.status(400).json({ message: 'Você não pode se remover da própria liga' });
+                        } else if(doc.data().friends.some(array => array.name === myFriend.name)) {
                             doc.ref.update({"friends": FieldValue.arrayRemove(myFriend)});
                             leagueName = doc.data().name;
                             return res.status(200).json({ message: `O amigo ${myFriend.name} foi removido da liga ${leagueName}` });

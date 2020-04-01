@@ -55,7 +55,7 @@ app.post('/leagues/addFriend/:league/:handleFriend', FBAuth, addFriendToLeague);
 app.get('/user/leagues', FBAuth, getMyLeagues);
 app.get('/user/leagues/:handle', getUserLeagues);
 app.get('/leagues/:league', getOneLeague);
-app.post('/leagues/:league/:handle', FBAuth, removeUserFromLeague);
+app.delete('/leagues/:league/:handle', FBAuth, removeUserFromLeague);
 
 //Post stuff
 app.get('/posts', FBAuth, getAllPosts);
