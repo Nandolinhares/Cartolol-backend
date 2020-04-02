@@ -242,7 +242,7 @@ exports.uploadPlayerImage = (req, res) => {
 };
 
 exports.getSups = (req, res) => {
-    db.collection('players').where('position', '==', 'Sup').get()
+    db.collection('players').where('position', '==', 'Sup').orderBy('points', 'desc').limit(1).get()
         .then(data => {
             let sups = [];
             data.forEach(doc => {
@@ -258,7 +258,7 @@ exports.getSups = (req, res) => {
 }
 
 exports.getADCs = (req, res) => {
-    db.collection('players').where('position', '==', 'Adc').get()
+    db.collection('players').where('position', '==', 'Adc').orderBy('points', 'desc').limit(1).get()
         .then(data => {
             let adcs = [];
             data.forEach(doc => {
@@ -274,7 +274,7 @@ exports.getADCs = (req, res) => {
 }
 
 exports.getMids = (req, res) => {
-    db.collection('players').where('position', '==', 'Mid').get()
+    db.collection('players').where('position', '==', 'Mid').orderBy('points', 'desc').limit(1).get()
         .then(data => {
             let mids = [];
             data.forEach(doc => {
@@ -290,7 +290,7 @@ exports.getMids = (req, res) => {
 }
 
 exports.getJunglers = (req, res) => {
-    db.collection('players').where('position', '==', 'Jungler').get()
+    db.collection('players').where('position', '==', 'Jungler').orderBy('points', 'desc').limit(1).get()
         .then(data => {
             let jgs = [];
             data.forEach(doc => {
@@ -305,7 +305,7 @@ exports.getJunglers = (req, res) => {
 }
 
 exports.getTops = (req, res) => {
-    db.collection('players').where('position', '==', 'Top').get()
+    db.collection('players').where('position', '==', 'Top').orderBy('points', 'desc').limit(1).get()
         .then(data => {
             let tops = [];
             data.forEach(doc => {
