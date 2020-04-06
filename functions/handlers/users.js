@@ -112,7 +112,7 @@ exports.login = (req, res) => {
 }
 
 exports.getUsersByPoints = (req, res) => {
-    db.collection('users').orderBy("points", "desc").limit(10).get()
+    db.collection('users').orderBy("points", "desc").limit(8).get()
         .then(data => {
             let userData = [];
             data.forEach(doc => {
